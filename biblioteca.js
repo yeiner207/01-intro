@@ -1,7 +1,6 @@
 let books=[];
 function createbook(title,author,genre,isbn){
     return {
-        a
         id : Date.now(),
         title : title,
         author : author,
