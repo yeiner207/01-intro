@@ -1,7 +1,8 @@
 let books=[];
+let nextId= 1;
 function createbook(title,author,genre,isbn){
     return {
-        id : Date.now(),
+        id : nextId++,
         title : title,
         author : author,
         genre : genre,
@@ -19,9 +20,20 @@ function addToLibrary(booksarray,tiitle,author,genre,isbn){
     booksarray.push(newbook);
 }
 
-addToLibrary(books, "Cien Años de Soledad", "Gabriel García Márquez", "Realismo Mágico", "1234567890");
+function removeBook(books,id){
+    const index = books.findIndex(book => book.id === id);
+    if (index !== -1){
+        const removed =books.splice(index,1);
+        return removed[0]
+    }
+    return null;
+}
 
-console.log(books);
+addToLibrary(books, "Cien Años de Soledad", "Gabriel García Márquez", "Realismo Mágico", "1234567890");
 addToLibrary(books, "pepito", "yeiner", "terror", "1089088383");
 
 console.log(books);
+let removed = removeBook(books, 1);
+
+console.log("Libro eliminado:", removed);
+console.log("Biblioteca actualizada:", books);
