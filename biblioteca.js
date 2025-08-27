@@ -149,3 +149,17 @@ function generateLibraryReport(books, borrowedBooks) {
     return { totalBooks, borrowedBooks: borrowed, availableBooks: available, overdueBooks, totalFines };
 }
 
+/* ===================== EJEMPLO DE USO ===================== */
+addBookToLibrary(books, "Cien Años de Soledad", "Gabriel García Márquez", "Realismo Mágico", "1234567890");
+addBookToLibrary(books, "Pepito", "Yeiner", "Terror", "1089088383");
+
+console.log(" Biblioteca inicial:", books);
+
+let prestamo = borrowBook(books, borrowedBooks, 1, "Eliana", 7);
+console.log(" Préstamo:", prestamo);
+let devolver = returnBook(books, borrowedBooks, 1);
+console.log(" Devolución:", devolver);
+
+console.log(" Buscar 'terror':", searchBooks(books, "terror"));
+
+console.log(" Reporte:", generateLibraryReport(books, borrowedBooks));
