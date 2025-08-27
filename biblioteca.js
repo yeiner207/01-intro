@@ -1,100 +1,89 @@
-let books=[];
-let nextId= 1;
+let books = [];
+let nextId = 1;
 let borrowedBooks = new Map();
 
-function createbook(title,author,genre,isbn){
+/**
+ * 1. Crear libro
+ */
+function createBook(title, author, genre, isbn) {
     return {
-        id : nextId++,
-        title : title,
-        author : author,
-        genre : genre,
-        isbn : isbn,
-        isAvailable : true,
+        id: nextId++,
+        title,
+        author,
+        genre,
+        isbn,
+        isAvailable: true,
         borrowedBy: null,
         borrowedAt: null,
         dueDate: null,
-        createdAt : new Date().toDateString()
+        createdAt: new Date().toDateString()
     };
 }
 
-function addToLibrary(booksarray,tiitle,author,genre,isbn){
-    const newbook = createbook(tiitle,author,genre,isbn);
-    booksarray.push(newbook);
+/**
+ * 2. Agregar libro
+ */
+function addBookToLibrary(booksArray, title, author, genre, isbn) {
+    const newBook = createBook(title, author, genre, isbn);
+    booksArray.push(newBook);
+    return newBook;
 }
 
-function removeBook(books,id){
+/**
+ * 3. Eliminar libro
+ */
+function removeBookFromLibrary(books, id) {
     const index = books.findIndex(book => book.id === id);
-    if (index !== -1){
-        const removed =books.splice(index,1);
-        return removed[0]
+    if (index !== -1) {
+        return books.splice(index, 1)[0];
     }
     return null;
 }
 
-function borrowBook(books, id, borrowerName) {
-    const index = books.findIndex(book => book.id === id);
-    if (index !== -1) {
-        let book = books[index];
-
-        if (!book.isAvailable) {
-            return `El libro "${book.title}" ya está prestado a ${book.borrowedBy}.`;
-        }
-
-        book.isAvailable = false;
-        book.borrowedBy = borrowerName;
-        book.borrowedAt = new Date();
-        
-        // ejemplo: 15 días de préstamo
-        const due = new Date();
-        due.setDate(due.getDate() + 15);
-        book.dueDate = due;
-
-        return `El libro "${book.title}" fue prestado a ${borrowerName}.`;
+/**
+ * 4. Prestar libro
+ */
+function borrowBook(books, borrowedBooks, bookId, borrowerName, days = 14) {
+    const book = books.find(b => b.id === bookId);
+    if (!book) {
+        return { success: false, message: "Libro no encontrado" };
     }
-    return `No se encontró el libro con id ${id}.`;
+    if (!book.isAvailable) {
+        return { success: false, message: `El libro ya está prestado a ${book.borrowedBy}` };
+    }
+
+    book.isAvailable = false;
+    book.borrowedBy = borrowerName;
+    book.borrowedAt = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + days);
+    book.dueDate = dueDate;
+
+    borrowedBooks.set(bookId, book);
+
+    return { success: true, message: `El libro "${book.title}" fue prestado.`, book, dueDate };
 }
-function returnBook(books, borrowedBooks, id) {
-    
-    const index = books.findIndex(book => book.id === id);
-    if (index === -1) {
-        return "Libro no encontrado";
-    }
 
-    let book = books[index];
+/**
+ * 5. Devolver libro
+ */
+function returnBook(books, borrowedBooks, bookId, fineRate = 1000) {
+    const book = books.find(b => b.id === bookId);
+    if (!book) return { success: false, message: "Libro no encontrado", fine: 0 };
 
-    if (book.isAvailable) {
-        return "Hasta el momento no lo tiene nadie";
-    }
+    if (book.isAvailable) return { success: false, message: "El libro no estaba prestado", fine: 0 };
 
-    // Restaurar propiedades
+    // calcular multa
+    let fine = calculateFine(book.dueDate, fineRate);
+
+    // restaurar
     book.isAvailable = true;
     book.borrowedBy = null;
     book.borrowedAt = null;
     book.dueDate = null;
 
-    // Calcular multa
-    let fine = 0;
-    let today = new Date();
-    let borrowedInfo = borrowedBooks.get(id);
-    if (borrowedInfo && borrowedInfo.dueDate && today > borrowedInfo.dueDate) {
-        let delayDays = Math.ceil((today - borrowedInfo.dueDate) / (1000 * 60 * 60 * 24));
-        fine = delayDays * 1000;
-    }
+    borrowedBooks.delete(bookId);
 
-    // Eliminar del Map
-    borrowedBooks.delete(id);
-
-    return `Libro devuelto. Multa: $${fine}`;
+    return { success: true, message: "Libro devuelto", fine };
 }
 
-addToLibrary(books, "Cien Años de Soledad", "Gabriel García Márquez", "Realismo Mágico", "1234567890");
-addToLibrary(books, "pepito", "yeiner", "terror", "1089088383");
-
-console.log(books);
-
-borrowBook(books,1,"eliana");
-console.log(books)
-let borrowedInfo = borrowedBooks.get(1);
-borrowedInfo.dueDate = new Date("2025-08-20")
-returnBook(books,borrowedBook,1)
-console.log(books)
