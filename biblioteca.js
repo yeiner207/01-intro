@@ -2,6 +2,7 @@ let books=[];
 let nextId= 1;
 function createbook(title,author,genre,isbn){
     return {
+        a
         id : nextId++,
         title : title,
         author : author,
