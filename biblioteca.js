@@ -109,3 +109,10 @@ function searchBooks(books, criteria) {
     );
 }
 
+/**
+ * 8. Filtrar por género
+ */
+function getBooksByGenre(books, genre) {
+    return books.filter(book => book.genre.toLowerCase() === genre.toLowerCase());
+}
+
