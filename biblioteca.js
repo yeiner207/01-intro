@@ -87,3 +87,25 @@ function returnBook(books, borrowedBooks, bookId, fineRate = 1000) {
     return { success: true, message: "Libro devuelto", fine };
 }
 
+/**
+ * 6. Calcular multa
+ */
+function calculateFine(dueDate, fineRate = 1000) {
+    const today = new Date();
+    if (!dueDate || today <= dueDate) return 0;
+    const delayDays = Math.ceil((today - dueDate) / (1000 * 60 * 60 * 24));
+    return delayDays * fineRate;
+}
+
+/**
+ * 7. Buscar libros
+ */
+function searchBooks(books, criteria) {
+    const lower = criteria.toLowerCase();
+    return books.filter(book =>
+        book.title.toLowerCase().includes(lower) ||
+        book.author.toLowerCase().includes(lower) ||
+        book.genre.toLowerCase().includes(lower)
+    );
+}
+
