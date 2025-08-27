@@ -54,6 +54,7 @@ function borrowBook(books, id, borrowerName) {
     return `No se encontró el libro con id ${id}.`;
 }
 function returnBook(books, borrowedBooks, id) {
+    
     const index = books.findIndex(book => book.id === id);
     if (index === -1) {
         return "Libro no encontrado";
