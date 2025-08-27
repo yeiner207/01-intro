@@ -116,3 +116,36 @@ function getBooksByGenre(books, genre) {
     return books.filter(book => book.genre.toLowerCase() === genre.toLowerCase());
 }
 
+/**
+ * 9. Obtener libros vencidos
+ */
+function getOverdueBooks(borrowedBooks, fineRate = 1000) {
+    const today = new Date();
+    let overdue = [];
+    for (let [id, book] of borrowedBooks) {
+        if (book.dueDate && today > book.dueDate) {
+            overdue.push({
+                id: book.id,
+                title: book.title,
+                borrowedBy: book.borrowedBy,
+                dueDate: book.dueDate,
+                fine: calculateFine(book.dueDate, fineRate)
+            });
+        }
+    }
+    return overdue;
+}
+
+/**
+ * 10. Reporte de biblioteca
+ */
+function generateLibraryReport(books, borrowedBooks) {
+    const totalBooks = books.length;
+    const borrowed = [...borrowedBooks.values()].length;
+    const available = books.filter(b => b.isAvailable).length;
+    const overdueBooks = getOverdueBooks(borrowedBooks).length;
+    const totalFines = getOverdueBooks(borrowedBooks).reduce((sum, b) => sum + b.fine, 0);
+
+    return { totalBooks, borrowedBooks: borrowed, availableBooks: available, overdueBooks, totalFines };
+}
+
